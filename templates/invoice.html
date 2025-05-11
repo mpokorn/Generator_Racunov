@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Račun</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 40px 0;
+            background: #f4f4f4;
+        }
+
+        .container {
+            width: 794px; /* A4 širina pri 96 DPI */
+            margin: 0 auto;
+            background: white;
+            padding: 40px 50px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .header, .footer {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .section {
+            margin-top: 30px;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .details, .items, .bank, .notes {
+            font-size: 14px;
+        }
+
+        .items table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .items th, .items td {
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .items th {
+            background: #f0f0f0;
+        }
+
+        .totals {
+            margin-top: 10px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #555;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h2>{{ invoice.sender_name }}</h2>
+            <div>{{ invoice.sender_address }}</div>
+            <div>{{ invoice.sender_postal_code }} {{ invoice.sender_city }}</div>
+            <div>{{ invoice.sender_country }}</div>
+            <div>{{ invoice.sender_email }}</div>
+            <div>{{ invoice.sender_phone }}</div>
+        </div>
+        <div style="text-align: right;">
+            <h1>Račun</h1>
+            <div>ID: {{ invoice.id }}</div>
+            <div>Datum izdaje: {{ invoice.issue_date.strftime('%d. %m. %Y') if invoice.issue_date }}</div>
+            <div>Rok plačila: {{ invoice.due_date.strftime('%d. %m. %Y') if invoice.due_date }}</div>
+            <div>Valuta: {{ invoice.currency }}</div>
+        </div>
+    </div>
+
+    <div class="section details">
+        <div class="section-title">Prejemnik:</div>
+        <div>{{ invoice.recipient_name }}</div>
+        <div>{{ invoice.recipient_address }}</div>
+        <div>{{ invoice.recipient_postal_code }} {{ invoice.recipient_city }}</div>
+        <div>{{ invoice.recipient_country }}</div>
+        <div>{{ invoice.recipient_email }}</div>
+        <div>{{ invoice.recipient_phone }}</div>
+    </div>
+
+    <div class="section items">
+        <div class="section-title">Postavke</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Opis</th>
+                <th>Količina</th>
+                <th>Cena</th>
+                <th>Skupaj</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in invoice.items %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ "%.2f"|format(item.unit_price) }} {{ invoice.currency }}</td>
+                    <td>{{ "%.2f"|format(item.quantity * item.unit_price) }} {{ invoice.currency }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="totals">Skupni znesek: {{ "%.2f"|format(invoice.total) }} {{ invoice.currency }}</div>
+    </div>
+
+    {% if invoice.bank_name %}
+    <div class="section bank">
+        <div class="section-title">Plačilni podatki</div>
+        <div>{{ invoice.bank_name }}</div>
+        <div>{{ invoice.bank_account_name }}</div>
+        <div>{{ invoice.bank_account_number }}</div>
+        <div>Sklic: {{ invoice.reference }}</div>
+    </div>
+    {% endif %}
+
+    {% if invoice.notes %}
+    <div class="section notes">
+        <div class="section-title">Opombe</div>
+        <div>{{ invoice.notes }}</div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <div>Za vprašanja se obrnite na: {{ invoice.sender_email }} | {{ invoice.sender_phone }}</div>
+    </div>
+
+</div>
+</body>
+</html>

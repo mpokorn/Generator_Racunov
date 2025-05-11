@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Ustvari račun</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        input, select, textarea {
+            margin: 5px 0;
+            padding: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .item-row input {
+            flex: 1;
+        }
+        button {
+            padding: 8px 12px;
+            margin-top: 10px;
+        }
+        pre {
+            background: #eee;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+    <script>
+        function addItemRow() {
+            const row = document.createElement("div");
+            row.className = "item-row";
+            row.innerHTML = `
+                <input type="text" placeholder="Opis" class="description">
+                <input type="number" placeholder="Količina" class="quantity">
+                <input type="number" placeholder="Cena (€ z DDV)" class="price">
+                <input type="number" placeholder="DDV (%)" class="tax_rate">
+                <button onclick="this.parentElement.remove()">🗑️</button>
+            `;
+            document.getElementById("items").appendChild(row);
+        }
+
+        async function sendInvoice() {
+            const descriptions = document.querySelectorAll(".description");
+            const quantities = document.querySelectorAll(".quantity");
+            const prices = document.querySelectorAll(".price");
+            const taxRates = document.querySelectorAll(".tax_rate");
+
+            let items = [];
+            let total = 0;
+
+            for (let i = 0; i < descriptions.length; i++) {
+                const qty = parseFloat(quantities[i].value) || 0;
+                const price = parseFloat(prices[i].value) || 0;
+                total += qty * price;
+                items.push({
+                    description: descriptions[i].value,
+                    quantity: qty,
+                    unit_price: price,
+                    tax_rate: parseFloat(taxRates[i].value) || 0
+                });
+            }
+
+            const discountPercent = parseFloat(document.getElementById("discount_percent").value) || 0;
+            const shipping = parseFloat(document.getElementById("shipping").value) || 0;
+
+            total = total - (total * discountPercent / 100) + shipping;
+
+            const payload = {
+                invoice_number: document.getElementById("invoice_number").value || null,
+                customer_name: document.getElementById("customer_name").value,
+                issue_date: document.getElementById("issue_date").value,
+                due_date: document.getElementById("due_date").value,
+                currency: document.getElementById("currency").value,
+                items: items,
+                discount_percent: discountPercent,
+                shipping: shipping,
+                issuer: {
+                    name: document.getElementById("issuer_name").value,
+                    address: document.getElementById("issuer_address").value,
+                    postal_code: document.getElementById("issuer_postal_code").value,
+                    city: document.getElementById("issuer_city").value,
+                    country: document.getElementById("issuer_country").value,
+                    email: document.getElementById("issuer_email").value,
+                    phone: document.getElementById("issuer_phone").value
+                },
+                receiver: {
+                    name: document.getElementById("receiver_name").value,
+                    address: document.getElementById("receiver_address").value,
+                    postal_code: document.getElementById("receiver_postal_code").value,
+                    city: document.getElementById("receiver_city").value,
+                    country: document.getElementById("receiver_country").value,
+                    email: document.getElementById("receiver_email").value,
+                    phone: document.getElementById("receiver_phone").value
+                },
+                bank_name: document.getElementById("bank_name").value,
+                bank_account_name: document.getElementById("bank_account_name").value,
+                bank_account_number: document.getElementById("bank_account_number").value,
+                reference: document.getElementById("reference").value,
+                notes: document.getElementById("notes").value,
+                payment_terms: document.getElementById("payment_terms").value,
+                total: total
+            };
+
+            const response = await fetch("/v1/invoices/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                document.getElementById("result").textContent = await response.text();
+                return;
+            }
+
+            const data = await response.json();
+            document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+            document.getElementById("links").innerHTML = `
+                <a href="/invoice/${data.id}" target="_blank">🔎 Ogled HTML</a><br>
+                <a href="/invoice/${data.id}/pdf" target="_blank">📄 Prenesi PDF</a>
+            `;
+        }
+    </script>
+</head>
+<body>
+
+    <h1>Ustvari račun</h1>
+
+    <div class="section">
+        <input type="text" id="invoice_number" placeholder="Številka računa (npr. 2024-001)">
+        <input type="text" id="customer_name" placeholder="Naziv stranke">
+        <input type="date" id="issue_date" placeholder="Datum izdaje">
+        <input type="date" id="due_date" placeholder="Rok plačila">
+        <select id="currency">
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+        </select>
+    </div>
+
+    <div class="section">
+        <h3>Podatki izdajatelja</h3>
+        <input type="text" id="issuer_name" placeholder="Naziv">
+        <input type="text" id="issuer_address" placeholder="Naslov">
+        <input type="text" id="issuer_postal_code" placeholder="Poštna številka">
+        <input type="text" id="issuer_city" placeholder="Kraj">
+        <input type="text" id="issuer_country" placeholder="Država">
+        <input type="email" id="issuer_email" placeholder="Email">
+        <input type="text" id="issuer_phone" placeholder="Telefon">
+    </div>
+
+    <div class="section">
+        <h3>Podatki prejemnika</h3>
+        <input type="text" id="receiver_name" placeholder="Naziv">
+        <input type="text" id="receiver_address" placeholder="Naslov">
+        <input type="text" id="receiver_postal_code" placeholder="Poštna številka">
+        <input type="text" id="receiver_city" placeholder="Kraj">
+        <input type="text" id="receiver_country" placeholder="Država">
+        <input type="email" id="receiver_email" placeholder="Email">
+        <input type="text" id="receiver_phone" placeholder="Telefon">
+    </div>
+
+    <div class="section">
+        <h3>Postavke</h3>
+        <div id="items"></div>
+        <button type="button" onclick="addItemRow()">➕ Dodaj vrstico</button>
+    </div>
+
+    <div class="section">
+        <h3>Popusti in poštnina</h3>
+        <input type="number" id="discount_percent" placeholder="Popust (%)">
+        <input type="number" id="shipping" placeholder="Poštnina (€)">
+    </div>
+
+    <div class="section">
+        <h3>Plačilni podatki</h3>
+        <input type="text" id="bank_name" placeholder="Ime banke">
+        <input type="text" id="bank_account_name" placeholder="Ime računa">
+        <input type="text" id="bank_account_number" placeholder="IBAN/račun">
+        <input type="text" id="reference" placeholder="Referenca">
+    </div>
+
+    <div class="section">
+        <textarea id="notes" placeholder="Opombe"></textarea>
+        <textarea id="payment_terms" placeholder="Plačilni pogoji (npr. 30 dni)"></textarea>
+    </div>
+
+    <button onclick="sendInvoice()">✅ Ustvari račun</button>
+
+    <h3>Rezultat</h3>
+    <pre id="result"></pre>
+
+    <h3>Povezave</h3>
+    <div id="links"></div>
+</body>
+</html>

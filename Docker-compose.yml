@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: invoice-backend
+    expose:
+      - "8000"
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: /api
+    container_name: invoice-frontend
+    ports:
+      - "80:80"  # localhost dostopa do NGINX tu
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  default:
+    name: projekt_app-network
