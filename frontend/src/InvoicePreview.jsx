@@ -183,8 +183,28 @@ export default function InvoicePreview() {
               <option value="GBP">British Pound (£)</option>
               <option value="CHF">Swiss Franc</option>
               <option value="JPY">Japanese Yen (¥)</option>
-              <option value="HRK">Hrvaška kuna</option>
-              <option value="PLN">Poljski zlot</option>
+              <option value="AUD">Australian Dollar</option>
+              <option value="CAD">Canadian Dollar</option>
+              <option value="CNY">Chinese Yuan (元)</option>
+              <option value="SEK">Swedish Krona</option>
+              <option value="NZD">New Zealand Dollar</option>
+              <option value="NOK">Norwegian Krone</option>
+              <option value="DKK">Danish Krone</option>
+              <option value="HKD">Hong Kong Dollar</option>
+              <option value="SGD">Singapore Dollar</option>
+              <option value="MXN">Mexican Peso</option>
+              <option value="ZAR">South African Rand</option>
+              <option value="INR">Indian Rupee</option>
+              <option value="BRL">Brazilian Real</option>
+              <option value="RUB">Russian Ruble</option>
+              <option value="TRY">Turkish Lira</option>
+              <option value="PLN">Polish Zloty</option>
+              <option value="THB">Thai Baht</option>
+              <option value="MYR">Malaysian Ringgit</option>
+              <option value="PHP">Philippine Peso</option>
+              <option value="IDR">Indonesian Rupiah</option>
+              <option value="AED">United Arab Emirates Dirham</option>
+              <option value="SAR">Saudi Riyal</option>
             </select>
           </div>
 
@@ -234,7 +254,7 @@ export default function InvoicePreview() {
                 setInvoice({ ...invoice, bank_account_name: e.target.value })
               }
               className="w-full p-2 border border-gray-300 rounded"
-              placeholder="Npr. Matic Pokorn"
+              placeholder="Npr. Janez Novak"
             />
           </div>
           <div>

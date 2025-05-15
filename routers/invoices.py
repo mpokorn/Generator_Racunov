@@ -24,7 +24,7 @@ async def create_invoice(invoice: InvoiceCreate, db: AsyncSession = Depends(get_
     discount = invoice.discount_percent or 0.0
     shipping = invoice.shipping or 0.0
 
-    # 💰 Izračuni
+    # Izračuni
     subtotal = 0.0
     total_tax = 0.0
     for item in invoice.items:
