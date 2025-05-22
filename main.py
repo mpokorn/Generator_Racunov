@@ -61,7 +61,7 @@ frontend_path = os.path.join(os.path.dirname(__file__), "frontend", "build")
 #app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 # Inicializacija baze ob zagonu
-print("📦 Inicializacija baze...")
+print("Inicializacija baze...")
 
 async def _init():
     await init_db()
