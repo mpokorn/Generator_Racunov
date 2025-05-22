@@ -36,4 +36,4 @@ Make sure Docker is installed and running before executing the commands above.
 
 ## API Documentation
 
-See [`API_documentation.md`](API.md) for detailed info about each available endpoint.
+See [`API_documentation.md`](API_documentation/docs) for detailed info about each available endpoint.
