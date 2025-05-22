@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: invoice-backend
-    ports:                         
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
       - .:/app
     restart: unless-stopped
