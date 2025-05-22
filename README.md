@@ -27,7 +27,6 @@ This will build and launch both the backend (FastAPI) and frontend (React with N
 
 ## Access the Application
 
-- API Swagger Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 - Frontend: [http://localhost](http://localhost)
 
 Make sure Docker is installed and running before executing the commands above.
