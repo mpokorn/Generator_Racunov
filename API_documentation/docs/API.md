@@ -59,7 +59,7 @@ Creates a new invoice. The request body must be in JSON format and follow this s
 
 Returns the PDF version of the selected invoice.
 
-### 🔸 Path Parameter
+### Path Parameter
 
 ```json
 {
@@ -67,7 +67,7 @@ Returns the PDF version of the selected invoice.
 }
 ```
 
-### 🔸 Successful Response (200 OK)
+### Successful Response (200 OK)
 
 Returns a PDF file.  
 Content-Type: `application/pdf`
